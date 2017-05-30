@@ -7,7 +7,7 @@ import i18n from '../src/i18n'; // initialized i18next instance
 import '@kadira/storybook/addons';
 import registerScissors, { defaultDevices } from 'storybook-addon-scissors';
 
-import { storiesOf, action } from '@kadira/storybook';
+import { storiesOf, action, addDecorator } from '@kadira/storybook';
 
 import Item from '../src/components/Item';
 import ItemList from '../src/components/ItemList';
@@ -16,8 +16,16 @@ import Register from '../src/components/Register';
 
 registerScissors(defaultDevices);
 
+const LanguageDecorator = (story) => (
+  <I18nextProvider i18n={i18n}>
+    {story()}
+  </I18nextProvider>
+);
+addDecorator(LanguageDecorator);
+
 storiesOf('Item', module)
   .add('single item', () => {
+    i18n.changeLanguage("en");
     const item = {
       uuid: 'ert534534wertwert',
       name: 'Placeat voluptates repellendus',
@@ -33,18 +41,28 @@ storiesOf('Item', module)
 
 
 storiesOf('Itemlist', module)
-  .add('empty', () => {
+  .add('empty en', () => {
+    i18n.changeLanguage("en");
     const itemList = [];
     return (
-      <I18nextProvider i18n={i18n}>
-        <ItemList
-        itemList={itemList}
-        fetchItemList={action('fetch ItemList empty')}
-        loaded={true}/>
-      </I18nextProvider>
+      <ItemList
+      itemList={itemList}
+      fetchItemList={action('fetch ItemList empty')}
+      loaded={true}/>
+    );
+  })
+  .add('empty it', () => {
+    i18n.changeLanguage("it");
+    const itemList = [];
+    return (
+      <ItemList
+      itemList={itemList}
+      fetchItemList={action('fetch ItemList empty')}
+      loaded={true}/>
     );
   })
   .add('with one item', () => {
+    i18n.changeLanguage("en");
     const itemList = [{
       uuid: 'ert534534wertwert',
       name: 'Placeat voluptates repellendus veniam.',
@@ -53,15 +71,14 @@ storiesOf('Itemlist', module)
       pictureUrl: null
     }];
     return (
-      <I18nextProvider i18n={i18n}>
-        <ItemList
-        itemList={itemList}
-        fetchItemList={action('fetch ItemList with one item')}
-        loaded={true}/>
-      </I18nextProvider>
+      <ItemList
+      itemList={itemList}
+      fetchItemList={action('fetch ItemList with one item')}
+      loaded={true}/>
     );
   })
   .add('with many items', () => {
+    i18n.changeLanguage("en");
     const itemList = [];
 
     for (let i = 0; i < 9; i++) {
@@ -76,17 +93,26 @@ storiesOf('Itemlist', module)
       itemList.push(item);
     }
     return (
-      <I18nextProvider i18n={i18n}>
-        <ItemList
-        itemList={itemList}
-        fetchItemList={action('fetch ItemList with one item')}
-        loaded={true}/>
-      </I18nextProvider>
+      <ItemList
+      itemList={itemList}
+      fetchItemList={action('fetch ItemList with one item')}
+      loaded={true}/>
     );
   });
 
 storiesOf('Login', module)
-  .add('empty login', () => {
+  .add('empty login it', () => {
+    i18n.changeLanguage("it");
+    const error = '';
+    return (
+      <Login
+      lng="it"
+      error={error}
+      login={action('call to login')} />
+    );
+  })
+  .add('empty login en', () => {
+    i18n.changeLanguage("en");
     const error = '';
     return (
       <Login
@@ -95,7 +121,8 @@ storiesOf('Login', module)
     );
   })
   .add('bad credentials', () => {
-    const error = 'Username o password non corretti';
+    i18n.changeLanguage("en");
+    const error = 'login_error';
     return (
       <Login
       error={error}
@@ -104,7 +131,17 @@ storiesOf('Login', module)
   });
 
 storiesOf('Register', module)
-  .add('empty form', () => {
+  .add('empty form en', () => {
+    i18n.changeLanguage("en");
+    const error = {};
+    return (
+      <Register
+      error={error}
+      register={action('call to register')} />
+    );
+  })
+  .add('empty form it', () => {
+    i18n.changeLanguage("it");
     const error = {};
     return (
       <Register
@@ -113,14 +150,14 @@ storiesOf('Register', module)
     );
   })
   .add('form with first name empty and email not correct', () => {
+    i18n.changeLanguage("en");
     const error = {
-      text: 'Ci sono campi con errore',
       details: [{
         field: 'first_name',
-        error: 'Campo obbligatorio'
+        error: 'empty'
       },{
         field: 'email',
-        error: 'Email non corretta'
+        error: 'invalid'
       }]
     };
     return (
